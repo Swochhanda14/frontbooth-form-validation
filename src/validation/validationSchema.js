@@ -30,7 +30,21 @@ export const ApplicationSchema = yup.object({
     .typeError("Age must be a number")
     .required("Age is required")
     .min(18, "You must be at least 18 years old")
-    .max(100, "Age cannot be more than 100"),
+    .max(100, "Age cannot be more than 100")
+    .test(
+    "age-dob-match",
+    "Age does not match with Date of Birth",
+    function (value) {
+      const dob = this.parent.dob;
+      if (!dob || !value) return true; 
+
+      const birthYear = new Date(dob).getFullYear();
+      const currentYear = new Date().getFullYear();
+      const calculatedAge = currentYear - birthYear;
+
+      return calculatedAge === value;
+    }
+  ),
 
   gender: yup.string().required("Select one Gender"),
 
